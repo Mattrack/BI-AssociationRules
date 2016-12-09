@@ -46,12 +46,12 @@ export class AssociationRulesAppComponent {
 
         if (rule.match(this.transactions, this.minSup / 100, this.minConf / 100)) {
           this.rules.push(rule);
+        }
 
-          if (!this.best || rule.support === this.best.support && rule.confidence > this.best.confidence) {
-            this.best = rule;
-          } else if (!this.best || rule.support > this.best.support) {
-            this.best = rule;
-          }
+        if (!this.best || rule.support === this.best.support && rule.confidence > this.best.confidence) {
+          this.best = rule;
+        } else if (!this.best || rule.support > this.best.support) {
+          this.best = rule;
         }
 
       }
