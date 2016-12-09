@@ -17,12 +17,12 @@
             <th>Total</th>
           </tr>
           <tr *ngFor="let tr of transactions; let i=index"
-              [style.background-color]="tr.getItems().indexOf(xVal) > -1 && tr.getItems().indexOf(yVal) > -1 ? 'palegreen' : 'white'">
+              [style.background-color]="best && tr.containValues(best.xValues) && tr.containValues(best.yValues) ? 'palegreen' : 'white'">
             <td>{{i+1}}</td>
             <td>
               <span *ngFor="let it of tr.getItems(); let ind=index">
-                <strong *ngIf="it === xVal">{{it}}</strong>
-                <span *ngIf="it !== xVal">{{it}}</span>
+                <strong *ngIf="best && best.xValues.indexOf(it) >= 0">{{it}}</strong>
+                <span *ngIf="!best || best.xValues.indexOf(it) < 0">{{it}}</span>
               </span>
             </td>
             <td>{{tr.getItems().length}}</td>
@@ -39,7 +39,8 @@
           <label for="minSupport">Minimum support</label>
           <div class="input-group">
             <div class="input-group-addon">%</div>
-            <input type="number" id="minSupport" class="form-control" [(ngModel)]="minSup" [value]="50">
+            <input type="number" id="minSupport" class="form-control" [(ngModel)]="minSup" [value]="50"
+                   (change)="calculate()" (keyup)="calculate()">
           </div>
         </div>
 
@@ -47,31 +48,54 @@
           <label for="minConfidence">Minimum confidence</label>
           <div class="input-group">
             <div class="input-group-addon">%</div>
-            <input type="number" id="minConfidence" class="form-control" [(ngModel)]="minConf" [value]="50">
+            <input type="number" id="minConfidence" class="form-control" [(ngModel)]="minConf" [value]="50"
+                   (change)="calculate()" (keyup)="calculate()">
           </div>
         </div>
 
-        <div class="form-group">
-          <label for="xItem">X Item</label>
-          <select class="form-control" id="xItem" [(ngModel)]="xVal">
-            <option *ngFor="let item of ITEMS" [value]="item">{{item}}</option>
-          </select>
+        <!--<div class="form-group">-->
+        <!--<label for="xItem">X Item</label>-->
+        <!--<select class="form-control" id="xItem" [(ngModel)]="xVal">-->
+        <!--<option *ngFor="let item of ITEMS" [value]="item">{{item}}</option>-->
+        <!--</select>-->
+        <!--</div>-->
+
+        <!--<div class="form-group">-->
+        <!--<label for="yItem">Y Item</label>-->
+        <!--<select class="form-control" id="yItem" [(ngModel)]="yVal">-->
+        <!--<option *ngFor="let item of ITEMS" [value]="item">{{item}}</option>-->
+        <!--</select>-->
+        <!--</div>-->
+
+
+        <!--<button type="button" class="btn btn-primary" (click)="calculate()">Calculate</button>-->
+
+        <div *ngIf="best">
+          <strong>Best</strong><br>
+
+          {{best.xValues.join(', ')}} <strong>-></strong> {{best.yValues.join(', ')}}<br>
+
+          Support: {{(best.support * 100).toFixed(0)}}%<br>
+          Confidence: {{(best.confidence * 100).toFixed(0)}}%
         </div>
-
-        <div class="form-group">
-          <label for="yItem">Y Item</label>
-          <select class="form-control" id="yItem" [(ngModel)]="yVal">
-            <option *ngFor="let item of ITEMS" [value]="item">{{item}}</option>
-          </select>
-        </div>
-
-
-        <button type="button" class="btn btn-primary" (click)="calculate()">Calculate</button>
 
       </form>
 
-      SUPPORT: <strong>{{sup.toFixed(0)}}%</strong>
-      CONFIDENCE: <strong>{{conf.toFixed(0)}}%</strong>
+      <table>
+        <tr>
+          <th>X</th>
+          <th>Y</th>
+          <th>Support</th>
+          <th>Confidence</th>
+        </tr>
+        <tr *ngFor="let rule of rules; let i=index"
+            [style.background-color]="best === rule ? 'palegreen' : 'white'">
+          <td>{{rule.xValues.join(', ')}}</td>
+          <td>{{rule.yValues.join(', ')}}</td>
+          <td>{{(rule.support * 100).toFixed(0)}}%</td>
+          <td>{{(rule.confidence * 100).toFixed(0)}}%</td>
+        </tr>
+      </table>
 
     </div>
 

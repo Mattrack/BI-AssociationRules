@@ -64,4 +64,19 @@ export class Transaction {
   getItems(): String[] {
     return this.items;
   }
+
+  containValues(values: String[]): boolean {
+
+    let match = true;
+    for (let i = 0; i < values.length; ++i) {
+
+      if (this.items.indexOf(values[i]) < 0) {
+
+        match = false;
+        break;
+      }
+    }
+
+    return match;
+  }
 }

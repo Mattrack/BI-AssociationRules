@@ -1,5 +1,6 @@
 import {Component} from "@angular/core";
 import {Transaction, array} from "./shared/Transaction.model";
+import {Rule} from "./shared/Rule.model";
 
 @Component({
   moduleId: module.id,
@@ -12,16 +13,16 @@ export class AssociationRulesAppComponent {
   ITEMS: String[] = array;
   transactions: Transaction[];
 
-  sup: number = .0;
-  conf: number = .0;
-  xVal: String = "Bread";
-  yVal: String = "Milk";
-
   genRange: number = 10;
+  minSup: number = 50;
+  minConf: number = 50;
+
+  rules: Rule[] = [];
+  best: Rule;
 
   constructor() {
 
-    this.transactions = Transaction.randomize(10);
+    this.generate();
   }
 
   generate(): void {
@@ -31,30 +32,31 @@ export class AssociationRulesAppComponent {
 
   calculate(): void {
 
-    let sup = 0;
-    let conf1 = 0;
-    let conf2 = 0;
+    this.rules = [];
+    this.best = null;
 
-    for (let i = 0; i < this.transactions.length; ++i) {
+    for (let i = 0; i < this.ITEMS.length; ++i) {
 
-      let tr = this.transactions[i];
+      for (let j = 0; j < this.ITEMS.length; ++j) {
 
-      if (tr.getItems().indexOf(this.xVal) > -1) {
+        if (i === j)
+          continue;
 
-        ++conf1;
+        let rule: Rule = new Rule([this.ITEMS[i]], [this.ITEMS[j]]);
 
-        if (tr.getItems().indexOf(this.yVal) > -1) {
+        if (rule.match(this.transactions, this.minSup / 100, this.minConf / 100)) {
+          this.rules.push(rule);
 
-          ++sup;
-          ++conf2;
+          if (!this.best || rule.support === this.best.support && rule.confidence > this.best.confidence) {
+            this.best = rule;
+          } else if (!this.best || rule.support > this.best.support) {
+            this.best = rule;
+          }
         }
 
       }
 
     }
-
-    this.sup = sup / this.transactions.length * 100;
-    this.conf = conf2 / conf1 * 100;
 
   }
 }
