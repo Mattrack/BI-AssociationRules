@@ -1,0 +1,12 @@
+td, th {
+  border: solid 1px;
+  border-color: black;
+}
+
+.randomize {
+  margin: 10px;
+}
+
+div table {
+  margin: 10px;
+}
